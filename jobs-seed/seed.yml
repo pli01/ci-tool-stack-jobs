@@ -1,7 +1,7 @@
 - builder:
     name: ci-jobs-deployer-make
     builders:
-      - shell: '( cd jobs-deployer && make JJB_JOBS={JJB_JOBS} JJB_CONFIG=admin )'
+      - shell: '( cd jobs-deployer && make JJB_JOBS={JJB_JOBS} JJB_USER=admin )'
 
 - defaults:
     name: global
