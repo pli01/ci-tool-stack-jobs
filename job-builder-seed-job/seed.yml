@@ -1,21 +1,23 @@
 - project:
-   name: jobs-deployer
+   name: builder-seed-job
    jobs:
-     - 'updater-{name}'
+     - 'job-{name}'
 
 - job-template:
-    name: 'updater-{name}'
+    name: 'job-{name}'
     parameters:
     scm:
-      - repo-jobs-deployer
+      - repo-job-builder-seed-job
     triggers:
       - pollscm:
           cron: "H/5 * * * *"
     builders:
 # place here all job dir to populate
-      - ci-jobs-deployer-make:
+      - ci-job-builder-seed-job-make:
+          JJB_JOBS: "job-builder-seed-job"
+      - ci-job-builder-seed-job-make:
           JJB_JOBS: "job-hello-world-1"
-      - ci-jobs-deployer-make:
+      - ci-job-builder-seed-job-make:
           JJB_JOBS: "job-hello-world-2"
 
 - defaults:
@@ -38,18 +40,18 @@
       - mask-passwords
 
 - scm:
-    name: repo-jobs-deployer
+    name: repo-job-builder-seed-job
     scm:
       - git:
          url: http://github.com/pli01/ci-tool-stack-jobs.git
 #         credentials-id: jenkins-builder-id
-         basedir: jobs-deployer
+         basedir: job-builder-seed-job
          branches:
           - origin/master
          wipe-workspace: true
          skip-tag: true
 
 - builder:
-    name: ci-jobs-deployer-make
+    name: ci-job-builder-seed-job-make
     builders:
-      - shell: '( cd jobs-deployer && make JJB_JOBS={JJB_JOBS} JJB_USER=admin )'
+      - shell: '( cd job-builder-seed-job && make JJB_JOBS={JJB_JOBS} JJB_USER=admin )'
