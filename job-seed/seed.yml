@@ -1,7 +1,10 @@
 - project:
    name: jobs-deployer
    jobs:
-    - 'updater-{name}'
+     - 'updater-{name}-{jobname}'
+   jobname:
+     - job-hello-world-1
+     - job-hello-world-2
 
 - defaults:
     name: global
@@ -23,7 +26,7 @@
       - mask-passwords
 
 - job-template:
-    name: 'updater-{name}'
+    name: 'updater-{name}-{jobname}'
     parameters:
     scm:
       - repo-jobs-deployer
@@ -32,7 +35,7 @@
           cron: "H/5 * * * *"
     builders:
       - ci-jobs-deployer-make:
-          JJB_JOBS: "{name}"
+          JJB_JOBS: "{jobname}"
 
 - scm:
     name: repo-jobs-deployer
