@@ -3,6 +3,7 @@
    jobs:
      - 'updater-{name}-{jobname}'
    jobname:
+# place here all job dir to populate
      - job-hello-world-1
      - job-hello-world-2
 
