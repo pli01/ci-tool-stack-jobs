@@ -1,7 +1,7 @@
-- builder:
-    name: ci-jobs-deployer-make
-    builders:
-      - shell: '( cd jobs-deployer && make JJB_JOBS={JJB_JOBS} JJB_USER=admin )'
+- project:
+   name: jobs-deployer
+   jobs:
+    - 'updater-{name}'
 
 - defaults:
     name: global
@@ -20,16 +20,11 @@
       - timestamps
       - ansicolor
       - workspace-cleanup
-      - logstash
       - mask-passwords
-    email: ci-build@test.com
 
 - job-template:
     name: 'updater-{name}'
     parameters:
-    publishers:
-      - send-mail:
-          email: "{email}"
     scm:
       - repo-jobs-deployer
     triggers:
@@ -38,18 +33,6 @@
     builders:
       - ci-jobs-deployer-make:
           JJB_JOBS: "{name}"
-
-- project:
-   name: jobs-deployer
-   jobs:
-    - 'updater-{name}'
-
-- publisher:
-    name: send-mail
-    publishers:
-      - email:
-          recipients: "{email}"
-          send-to-individuals: true
 
 - scm:
     name: repo-jobs-deployer
@@ -63,3 +46,7 @@
          wipe-workspace: true
          skip-tag: true
 
+- builder:
+    name: ci-jobs-deployer-make
+    builders:
+      - shell: '( cd jobs-deployer && make JJB_JOBS={JJB_JOBS} JJB_USER=admin )'
