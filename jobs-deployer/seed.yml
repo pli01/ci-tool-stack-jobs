@@ -1,0 +1,65 @@
+- builder:
+    name: ci-jobs-deployer-make
+    builders:
+      - shell: '( cd jobs-deployer && make JJB_JOBS={JJB_JOBS} JJB_CONFIG=admin )'
+
+- defaults:
+    name: global
+    description: |
+      <p><b>Do not edit this job through the web</b></p>
+    project-type: freestyle
+    concurrent: false
+    block-downstream: true
+    block-upstream: true
+    logrotate:
+      daysToKeep: 1
+      numToKeep: 2
+      artifactDaysToKeep: -1
+      artifactNumToKeep: -1
+    wrappers:
+      - timestamps
+      - ansicolor
+      - workspace-cleanup
+      - logstash
+      - mask-passwords
+    email: ci-build@test.com
+
+- job-template:
+    name: 'updater-{name}'
+    parameters:
+    publishers:
+      - send-mail:
+          email: "{email}"
+    scm:
+      - repo-jobs-deployer
+    triggers:
+      - pollscm:
+          cron: "H/5 * * * *"
+    builders:
+      - ci-jobs-deployer-make:
+          JJB_JOBS: "{name}"
+
+- project:
+   name: jobs-deployer
+   jobs:
+    - 'updater-{name}'
+
+- publisher:
+    name: send-mail
+    publishers:
+      - email:
+          recipients: "{email}"
+          send-to-individuals: true
+
+- scm:
+    name: repo-jobs-deployer
+    scm:
+      - git:
+         url: http://github.com/pli01/ci-tool-stack-jobs.git
+#         credentials-id: jenkins-builder-id
+         basedir: jobs-deployer
+         branches:
+          - origin/master
+         wipe-workspace: true
+         skip-tag: true
+
