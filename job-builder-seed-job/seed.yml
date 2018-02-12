@@ -1,11 +1,22 @@
 - project:
    name: jobs-deployer
    jobs:
-     - 'updater-{name}-{jobname}'
-   jobname:
+     - 'updater-{name}'
+
+- job-template:
+    name: 'updater-{name}'
+    parameters:
+    scm:
+      - repo-jobs-deployer
+    triggers:
+      - pollscm:
+          cron: "H/5 * * * *"
+    builders:
 # place here all job dir to populate
-     - job-hello-world-1
-     - job-hello-world-2
+      - ci-jobs-deployer-make:
+          JJB_JOBS: "job-hello-world-1"
+      - ci-jobs-deployer-make:
+          JJB_JOBS: "job-hello-world-2"
 
 - defaults:
     name: global
@@ -25,18 +36,6 @@
       - ansicolor
       - workspace-cleanup
       - mask-passwords
-
-- job-template:
-    name: 'updater-{name}-{jobname}'
-    parameters:
-    scm:
-      - repo-jobs-deployer
-    triggers:
-      - pollscm:
-          cron: "H/5 * * * *"
-    builders:
-      - ci-jobs-deployer-make:
-          JJB_JOBS: "{jobname}"
 
 - scm:
     name: repo-jobs-deployer
