@@ -31,7 +31,7 @@ run-container-debug:
 	docker run $(run_args) -it -v $(shell pwd)/../:/opt --entrypoint /bin/bash --rm $(name):$(VERSION)
 
 package: clean
-	cd $(base_directory) && tar cvfz $(test_setup_directory)/$(test_archive) . --exclude=".git" --exclude="tests"
+	cd $(base_directory) && tar --exclude .git --exclude tests -zcvf $(test_setup_directory)/$(test_archive) .
 
 clean:
 	if [ -f $(test_archive) ]; then rm $(test_archive) ;fi
